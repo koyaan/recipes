@@ -1,2 +1,2 @@
-Setting up a Mac Nginc Percona PHP stack from scratch
+Setting up a Mac Nginx Percona PHP stack from scratch
 =====================================================
