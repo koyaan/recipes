@@ -190,7 +190,7 @@ Now all that is left is fix permissions according to http://symfony.com/doc/curr
     $ rm -rf app/cache/*
     $ rm -rf app/logs/*
     $ sudo setfacl -R -m u:www-data:rwX -m u:`whoami`:rwX app/cache app/logs
-    $ sudo setfacl -dR -m u:$APACHEUSER:rwX -m u:`whoami`:rwX app/cache app/logs
+    $ sudo setfacl -dR -m u:www-data:rwX -m u:`whoami`:rwX app/cache app/logs
 
 
 http://symfony.loc/app_dev.php  should be now up and running!
