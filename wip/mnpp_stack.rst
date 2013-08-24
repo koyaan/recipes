@@ -23,7 +23,27 @@ Install the brew package manager
 
     $ ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
     
+Install Percona
+---------------
 
+* Homepage: http://www.percona.com
+* quick instructions from http://www.percona.com/doc/percona-server/5.5/installation/apt_repo.html
+
+.. code-block:: bash
+
+    $ brew install percona-server
+    
+    $ unset TMPDIR
+    $ mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix percona-server)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
+
+To have launchd start percona-server at login:
+    ln -sfv /usr/local/opt/percona-server/*.plist ~/Library/LaunchAgents
+Then to load percona-server now:
+    launchctl load ~/Library/LaunchAgents/homebrew.mxcl.percona-server.plist
+Or, if you don't want/need launchctl, you can just run:
+    mysql.server start
+    
+    
 Install Nginx
 -------------
 
