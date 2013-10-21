@@ -6,3 +6,6 @@ cat /var/lib/dhcp/dhcpd.leases
 
 #download multiple files with curl
 curl -O "https://az412801.vo.msecnd.net/vhd/IEKitV1_Final/VirtualBox/OSX/IE10_Win8/IE10.Win8.For.MacVirtualBox.part{1.sfx,2.rar,3.rar}"
+
+#batch resize images with imagemagick
+$ for i in $( ls *.jpg); do convert -resize 50% $i re_$i; done
