@@ -14,3 +14,7 @@ $ for i in $( ls *.jpg); do convert -resize 50% $i re_$i; done
 APACHEUSER=`ps aux | grep -E '[a]pache|[h]ttpd' | grep -v root | head -1 | cut -d\  -f1`
 sudo setfacl -R -m u:$APACHEUSER:rwX -m u:`whoami`:rwX app/cache app/logs
 sudo setfacl -dR -m u:$APACHEUSER:rwX -m u:`whoami`:rwX app/cache app/logs
+
+
+#inline copy replace 
+sed -i 's/foo/bar/g' file
