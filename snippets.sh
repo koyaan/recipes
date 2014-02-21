@@ -18,3 +18,8 @@ sudo setfacl -dR -m u:$APACHEUSER:rwX -m u:`whoami`:rwX app/cache app/logs
 
 #inline copy replace 
 sed -i 's/foo/bar/g' file
+
+
+#show all files in finder 
+defaults write com.apple.finder AppleShowAllFiles TRUE
+killall Finder
