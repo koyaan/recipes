@@ -12,6 +12,8 @@ Install Command Line Tools for Xcode
 
 * Download and install Command Line Tools for XCode https://developer.apple.com/downloads 
 
+If you don´t have them already, in my case installing git required and downloaded them.
+
 Install the brew package manager
 --------------------------------
 
@@ -21,7 +23,7 @@ Install the brew package manager
 
 .. code-block:: bash
 
-    $ ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+    $ ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
     
 Install Percona
 ---------------
@@ -33,16 +35,13 @@ Install Percona
 
     $ brew install percona-server
     
-    $ unset TMPDIR
-    $ mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix percona-server)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
 
 To have launchd start percona-server at login:
-    ln -sfv /usr/local/opt/percona-server/*.plist ~/Library/LaunchAgents
+    ``ln -sfv /usr/local/opt/percona-server/*.plist ~/Library/LaunchAgents``
 Then to load percona-server now:
-    launchctl load ~/Library/LaunchAgents/homebrew.mxcl.percona-server.plist
+    ``launchctl load ~/Library/LaunchAgents/homebrew.mxcl.percona-server.plist``
 Or, if you don't want/need launchctl, you can just run:
-    mysql.server start
-    
+    ``mysql.server start``
     
 Install Nginx
 -------------
@@ -58,15 +57,20 @@ Install Nginx
 
 .. code-block:: bash
 
-    $ sudo nginx
+    $ nginx
 
 You should now be able to connect to http://localhost:8080
 If you can see the Nginx Default Screen shut it down for now:
 
 .. code-block:: bash
 
-    $ sudo nginx -s stop
-    
+    $ nginx -s stop
+
+To have launchd start nginx at login:
+    ``ln -sfv /usr/local/opt/nginx/*.plist ~/Library/LaunchAgents``
+Then to load nginx now:
+    ``launchctl load ~/Library/LaunchAgents/homebrew.mxcl.nginx.plist``
+
 Installing PHP 5.4
 ------------------
 
@@ -77,14 +81,22 @@ You need to tap some extra formulas to install php 5.4 with brew:
     $ brew tap homebrew/dupes
     $ brew tap josegonzalez/homebrew-php
     $ brew update
-    $ brew install php54
+    $ brew install php54 --with-fpm
 
-Now make sure that ``/usr/local/bin`` comes before ``/usr/local`` in your ``PATH`` environment variable
-One way to ensure this (which you can easily put in you .bash_profile): 
+Make php-fpm autostart:
+    ``ln -sfv /usr/local/opt/php54/homebrew-php.josegonzalez.php54.plist ~/Library/LaunchAgents/``
+and load it now:
+    ``launchctl load -w ~/Library/LaunchAgents/homebrew-php.josegonzalez.php54.plist``
+check if it worked:
+    ``lsof -Pni4 | grep LISTEN | grep php``
+
+
+Now make sure that CLI php also uses brew version you have to change your ``PATH`` environment variable
+One way to do this (which you can easily put in you .bash_profile): 
 
 .. code-block:: bash
     
-    $ export PATH=/usr/local/bin:$PATH
+    $ export PATH="$(brew --prefix josegonzalez/php/php54)/bin:$PATH"
 
 * Setup ``date.timezone`` in ``php.ini`` using our favorite editor ``vim``
 
@@ -102,6 +114,9 @@ One way to ensure this (which you can easily put in you .bash_profile):
     $ brew install php54-intl
     $ brew install php54-apc
     
+
+You can do a ``php -i | grep intl`` and ``php -i | grep apc`` to see if installation was successful.
+
 Install composer
 ----------------
 
@@ -113,16 +128,16 @@ Install composer
     $ curl -sS https://getcomposer.org/installer | php
     $ mv composer.phar /usr/local/bin/composer
     
-Install Symfony 2.3.3 standard edition
+Install Symfony 2.4.2 standard edition
 --------------------------------------
 
 For this example i use a www/symfony directory in my home directory
 
 .. code-block:: bash
 
-    $ mkdir  /Users/koyaan/www
-    $ cd /Users/koyaan/www
-    $ composer create-project symfony/framework-standard-edition symfony/ 2.3.3
+    $ mkdir ~/www
+    $ cd ~/www
+    $ composer create-project symfony/framework-standard-edition symfony/ 2.4.2
     
 The interactive config will pop up.
 Defaults are fine for almost anything but:
@@ -132,3 +147,62 @@ Defaults are fine for almost anything but:
 * database password
 * secret 
 
+
+Create nginx site configuration
+-------------------------------
+
+
+I copied and adjusted this one from http://wiki.nginx.org/symfony
+For quick & dirty you can just add this block to ``/usr/local/etc/nginx/nginx.conf``
+
+.. code-block:: conf
+
+    server {
+        listen 8080;
+    
+        server_name symfony.loc;
+        root /Users/armin/www/symfony/web;
+    
+        error_log /Users/armin/log/nginx/symfony.error.log;
+        access_log /Users/armin/log/nginx/symfony.access.log;
+    
+        # strip app.php/ prefix if it is present
+        rewrite ^/app\.php/?(.*)$ /$1 permanent;
+    
+        location / {
+            index app.php;
+            try_files $uri @rewriteapp;
+        }
+    
+        location @rewriteapp {
+            rewrite ^(.*)$ /app.php/$1 last;
+        }
+    
+        # pass the PHP scripts to FastCGI server from upstream phpfcgi
+        location ~ ^/(app|app_dev|config)\.php(/|$) {
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_split_path_info ^(.+\.php)(/.*)$;
+            include fastcgi_params;
+            fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param  HTTPS off;
+        }
+    }
+
+Activate the site and reload nginx config
+
+.. code-block:: bash
+
+    $ nginx -s stop
+    $ nginx
+
+Add symfony.loc to ``/etc/hosts``
+
+.. code-block:: bash
+
+    $ echo "127.0.0.1 symfony.loc" | sudo tee -a /etc/hosts
+
+
+http://symfony.loc:8080/app_dev.php  should be now up and running!
+
+
+Happy coding!
