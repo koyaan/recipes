@@ -23,3 +23,6 @@ sed -i 's/foo/bar/g' file
 #show all files in finder 
 defaults write com.apple.finder AppleShowAllFiles TRUE
 killall Finder
+
+#disable mouse accel on mac os
+defaults write .GlobalPreferences com.apple.mouse.scaling -1
