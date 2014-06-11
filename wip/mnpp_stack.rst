@@ -1,3 +1,6 @@
+This guide is a bit outdated + use with care
+============================================
+
 Setting up Nginx + Percona + PHP on Mac for Symfony 2
 ====================================================
 
