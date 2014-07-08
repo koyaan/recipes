@@ -14,7 +14,7 @@ Install Percona
 
 .. code-block:: bash
 
-    $ sudo apt-key adv --keyserver keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
+    $ sudo apt-key adv --keyserver keys.gnupg.net --recv-keys GET_KEY_HERE_FROM_SITE_ABOVE
 
 put this in ``/etc/apt/sources.list``
 
